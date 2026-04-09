@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message</title>
+    <link rel="stylesheet" href="https://unpkg.com/7.css">
+    <style>
+        body {
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: "MS Sans Serif", "Arial", sans-serif;
+        }
+        .window {
+            width: 300px;
+            display: none;
+            position: absolute;
+        }
+        .window-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            text-align: center;
+        }
+        .message-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .icon {
+            width: 32px;
+            height: 32px;
+        }
+        .user-photo {
+            width: 100px;
+            height: 100px;
+            border: 2px inset #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="birthdaySong" src="just the two of us.wav"></audio>
+
+    <div class="window" id="popup">
+        <div class="title-bar">
+            <div class="title-bar-text" id="title">message</div>
+            <div class="title-bar-controls">
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="message-content">
+                <img id="statusIcon" class="icon" src="https://win98icons.alexmeub.com/icons/png/msg_information-0.png" alt="info">
+                <p id="messageText"></p>
+            </div>
+            <img id="sarahPhoto" class="user-photo" src="us.jpg" style="display:none;">
+            
+            <section class="field-row" id="buttonContainer" style="justify-content: center;">
+                <button id="okBtn">OK</button>
+                <button id="yesBtn" style="display:none;">Yes</button>
+                <button id="noBtn" style="display:none;">No</button>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const intro = [
+            "hi sarah", "i hope you are well", "i thought a lot about what to get you for your birthday",
+            "i was going to send you flowers again", "but roses wither", "and i wanted to give you something eternal",
+            "so i spent the last couple of months learning to code", "completely out of my scope as an economics and french student",
+            "but this has been a lot of fun", "and i learnt a new skill", "anyways", "here is your birthday present", "(turn your volume up)"
+        ];
+
+        const lyrics = `i see the crystal raindrops fall
+and the beauty of it all
+is when the sun comes shining through
+to make those rainbows in my mind
+when I think of you sometime
+and I want to spend some time with you
+
+just the two of us
+we can make it if we try
+just the two of us
+(just the two of us)
+
+building castles in the sky
+just the two of us
+you and i
+
+we look for love, no time for tears
+wasted water's all that is
+and it don't make no flowers grow
+good things might come to those who wait
+not for those who wait too late
+we gotta go for all we know
+
+just the two of us
+we can make it if we try
+just the two of us
+(just the two of us)
+
+i hear the crystal raindrops fall
+on the window down the hall
+and it becomes the morning dew
+and darling when the morning comes
+and I see the morning sun
+i wanna be the one with you
+
+just the two of us
+we can make it if we try
+just the two of us
+(just the two of us)`.split('\n').filter(line => line.trim() !== "");
+
+        const outro = [
+            "i hope you liked it", "it's so cool right?", "btw if you couldn't tell",
+            "i recorded the guitar", "happiest of birthdays to you", "or as we say here in yorkshire",
+            "'av a reyt gud burfday'", "from yours truly", "A"
+        ];
+
+        const popup = document.getElementById('popup');
+        const msgText = document.getElementById('messageText');
+        const titleText = document.getElementById('title');
+        const okBtn = document.getElementById('okBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const sarahPhoto = document.getElementById('sarahPhoto');
+        const audio = document.getElementById('birthdaySong');
+        const statusIcon = document.getElementById('statusIcon');
+
+        let step = 0;
+        popup.style.display = 'block';
+        msgText.innerText = intro[0];
+
+        okBtn.onclick = () => {
+            step++;
+            if (step < intro.length) {
+                msgText.innerText = intro[step];
+            } else if (step === intro.length) {
+                titleText.innerText = "accept present?";
+                msgText.innerText = "do you wish to accept?";
+                statusIcon.src = "https://win98icons.alexmeub.com/icons/png/msg_question-0.png";
+                okBtn.style.display = 'none';
+                yesBtn.style.display = 'inline-block';
+                noBtn.style.display = 'inline-block';
+            }
+        };
+
+        noBtn.onclick = () => {
+            titleText.innerText = "error";
+            msgText.innerText = "girl just click yes.";
+            statusIcon.src = "https://win98icons.alexmeub.com/icons/png/msg_error-0.png";
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            okBtn.style.display = 'inline-block';
+            
+            okBtn.onclick = () => {
+                titleText.innerText = "accept present?";
+                msgText.innerText = "do you wish to accept?";
+                statusIcon.src = "https://win98icons.alexmeub.com/icons/png/msg_question-0.png";
+                okBtn.style.display = 'none';
+                yesBtn.style.display = 'inline-block';
+                noBtn.style.display = 'inline-block';
+            };
+        };
+
+        yesBtn.onclick = () => {
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            okBtn.style.display = 'inline-block';
+            sarahPhoto.style.display = 'block';
+            statusIcon.style.display = 'none';
+            audio.play();
+            playLyrics(0);
+        };
+
+        function playLyrics(index) {
+            titleText.innerText = "now playing: just the two of us";
+            if (index < lyrics.length) {
+                msgText.innerText = lyrics[index];
+                okBtn.onclick = () => playLyrics(index + 1);
+            } else {
+                sarahPhoto.style.display = 'none';
+                statusIcon.style.display = 'block';
+                statusIcon.src = "https://win98icons.alexmeub.com/icons/png/msg_information-0.png";
+                audio.pause();
+                playOutro(0);
+            }
+        }
+
+        function playOutro(index) {
+            titleText.innerText = "message";
+            if (index < outro.length) {
+                msgText.innerText = outro[index];
+                okBtn.onclick = () => playOutro(index + 1);
+            } else {
+                popup.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
